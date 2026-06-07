@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Vídeos de Estudo | Aegis Study{% endblock %}
+
+{% block content %}
+<header class="main-header">
+    <div class="header-title">
+        <h1>Vídeos de Estudo</h1>
+        <p>Curadoria de conteúdos para desenvolvimento pessoal e técnico.</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-primary" id="open-video-modal-btn">
+            <i class="fa-solid fa-plus"></i> Adicionar Vídeo
+        </button>
+    </div>
+</header>
+
+<!-- Filtros de Categoria -->
+<div class="videos-filter-bar">
+    <div class="filter-tags" id="video-category-filters">
+        <div class="filter-tag active" data-category="all">Todos</div>
+        <div class="filter-tag" data-category="Programação">Programação</div>
+        <div class="filter-tag" data-category="Filosofia">Filosofia</div>
+        <div class="filter-tag" data-category="Gestão Financeira">Gestão Financeira</div>
+        <div class="filter-tag" data-category="Autoajuda">Autoajuda</div>
+        <div class="filter-tag" data-category="Outros">Outros</div>
+    </div>
+</div>
+
+<!-- Grid de Vídeos -->
+<div class="videos-grid" id="videos-grid-container">
+    {% if videos %}
+        {% for video in videos %}
+        <div class="video-card" data-category="{{ video.category }}" data-video-id="{{ video.id }}">
+            <!-- Thumbnail Dinâmico -->
+            <div class="video-thumbnail-container" onclick="playVideo('{{ video.url }}', '{{ video.title }}')">
+                {% if 'youtube.com' in video.url or 'youtu.be' in video.url %}
+                    <!-- Obter ID do youtube no javascript e carregar thumbnail -->
+                    <img class="video-thumbnail" src="" data-yt-url="{{ video.url }}" alt="YouTube Thumbnail" onerror="this.src='https://images.unsplash.com/photo-1516116211223-5c359a36298a?w=500&auto=format&fit=crop&q=60'">
+                {% else %}
+                    <img class="video-thumbnail" src="https://images.unsplash.com/photo-1516116211223-5c359a36298a?w=500&auto=format&fit=crop&q=60" alt="Video Thumbnail">
+                {% endif %}
+                
+                <div class="video-play-overlay">
+                    <div class="play-btn-circle">
+                        <i class="fa-solid fa-play"></i>
+                    </div>
+                </div>
+                
+                <span class="video-badge">{{ video.category }}</span>
+            </div>
+            
+            <div class="video-content">
+                <h3 class="video-title" title="{{ video.title }}">{{ video.title }}</h3>
+                <p class="video-notes" title="{{ video.notes or '' }}">
+                    {{ video.notes or 'Sem anotações adicionais.' }}
+                </p>
+                
+                <div class="video-footer">
+                    <div class="toggle-container {% if video.watched %}active{% endif %}" onclick="toggleVideoWatched({{ video.id }}, this)">
+                        <div class="toggle-switch"></div>
+                        <span class="toggle-label">{% if video.watched %}Assistido{% else %}Não assistido{% endif %}</span>
+                    </div>
+                    
+                    <button class="btn-icon-danger" onclick="deleteVideo({{ video.id }})" title="Excluir vídeo">
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <!-- Card Vazio -->
+        <div style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; background-color: var(--bg-card); border: 1px dashed var(--border-color); border-radius: var(--border-radius-md); text-align: center;">
+            <i class="fa-solid fa-photo-film" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+            <h3 style="font-family: var(--font-heading); margin-bottom: 0.5rem;">Nenhum vídeo cadastrado</h3>
+            <p style="color: var(--text-secondary); max-width: 400px; font-size: 0.9rem; margin-bottom: 1.5rem;">Crie uma lista de vídeos importantes para ver sobre programação, filosofia e finanças pessoais.</p>
+            <button class="btn btn-primary" onclick="document.getElementById('open-video-modal-btn').click()">
+                Cadastrar Primeiro Vídeo
+            </button>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Modal Adicionar Vídeo -->
+<div class="modal" id="video-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Adicionar Vídeo de Estudo</h2>
+            <button class="modal-close" id="close-video-modal">&times;</button>
+        </div>
+        <form id="video-form" onsubmit="submitVideoForm(event)">
+            <div class="form-group">
+                <label for="video-title">Título do Vídeo</label>
+                <input type="text" id="video-title" class="form-control" placeholder="Ex: Aprenda Clean Code em 10 Minutos" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="video-url">Link do Vídeo (YouTube recomendado)</label>
+                <input type="url" id="video-url" class="form-control" placeholder="Ex: https://www.youtube.com/watch?v=..." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="video-category">Categoria</label>
+                <select id="video-category" class="form-control" required style="background-color: var(--bg-primary);">
+                    <option value="Programação">Programação</option>
+                    <option value="Filosofia">Filosofia</option>
+                    <option value="Gestão Financeira">Gestão Financeira</option>
+                    <option value="Autoajuda">Autoajuda</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="video-notes">Anotações / Objetivo</label>
+                <textarea id="video-notes" class="form-control" placeholder="Anotações rápidas sobre o que este vídeo ensina ou por que deseja ver..."></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-video-btn">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Adicionar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Plataforma de Estudos{% endblock %}</title>
+    <!-- Meta tags de SEO -->
+    <meta name="description" content="Minha plataforma de estudos pessoal para programação, filosofia, finanças e preparação para a prova da EFOMM.">
+    <!-- FontAwesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS Customizado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar lateral -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-anchor"></i>
+                </div>
+                <span class="brand-name">only study</span>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+                        <a href="{{ url_for('dashboard') }}" id="nav-dashboard">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if active_page == 'efomm' %}active{% endif %}">
+                        <a href="{{ url_for('efomm') }}" id="nav-efomm">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            <span>Estudos EFOMM</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if active_page == 'videos' %}active{% endif %}">
+                        <a href="{{ url_for('videos') }}" id="nav-videos">
+                            <i class="fa-solid fa-circle-play"></i>
+                            <span>Vídeos de Estudo</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar" id="profile-avatar">
+                        {{ user_name[0] | upper if user_name else 'R' }}
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name" id="profile-name">{{ user_name or 'Rafael' }}</span>
+                        <span class="user-role">Futuro Oficial</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Área de Conteúdo Principal -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Modal de Player de Vídeo Integrado (Global) -->
+    <div class="modal video-player-modal" id="video-player-modal">
+        <div class="modal-content" style="max-width: 850px;">
+            <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                <h2 id="video-player-title" style="font-size: 1.1rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">Assistindo Vídeo</h2>
+                <button class="modal-close" onclick="closePlayerModal()">&times;</button>
+            </div>
+            <div class="video-ratio-wrapper">
+                <div id="player-iframe-container">
+                    <!-- Iframe do YouTube inserido via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container para notificações Toast -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- JavaScript Principal -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

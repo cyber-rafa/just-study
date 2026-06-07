@@ -1,0 +1,5 @@
+.venv
+__pycache__
+*.pyc
+populate_db.py
+fix_videos.py

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Estudos EFOMM | Aegis Study{% endblock %}
+
+{% block content %}
+<header class="main-header">
+    <div class="header-title">
+        <h1>Cronograma EFOMM</h1>
+        <p>Acompanhe seu progresso em cada disciplina do edital e assista a videoaulas integradas de cada tema.</p>
+    </div>
+</header>
+
+<div class="efomm-container">
+    <!-- Abas das Disciplinas -->
+    <nav class="subject-tabs" id="subject-tabs-container">
+        <div class="subject-tab active" data-subject="Matemática">Matemática</div>
+        <div class="subject-tab" data-subject="Física">Física</div>
+        <div class="subject-tab" data-subject="Português">Português</div>
+        <div class="subject-tab" data-subject="Inglês">Inglês</div>
+    </nav>
+
+    <!-- Resumo do Progresso da Disciplina Selecionada -->
+    <div class="card" id="subject-progress-card" style="padding: 1.25rem 1.75rem; margin-bottom: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h3 style="font-family: var(--font-heading); font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-chart-line" style="color: var(--color-primary);"></i>
+                Progresso em <span id="current-tab-name">Matemática</span>
+            </h3>
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-primary);" id="subject-progress-stats">
+                0 de 0 Concluídos (0%)
+            </span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="subject-progress-bar-fill" style="width: 0%;"></div>
+        </div>
+    </div>
+
+    <!-- Tabela de Tópicos do Edital -->
+    <div class="topics-table-container">
+        <table class="topics-table">
+            <thead>
+                <tr>
+                    <th style="width: 40%;">Tópico do Conteúdo Programático</th>
+                    <th style="width: 25%;">Status de Estudo</th>
+                    <th style="width: 35%;">Minhas Anotações / Fórmulas Rápidas</th>
+                </tr>
+            </thead>
+            <tbody id="topics-tbody">
+                <!-- Preenchido dinamicamente via AJAX / JS para evitar recarregar a página -->
+                <tr>
+                    <td colspan="3" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                        <i class="fa-solid fa-spinner fa-spin" style="margin-right: 0.5rem;"></i> Carregando tópicos...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

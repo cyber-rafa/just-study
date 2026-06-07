@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Aegis Study{% endblock %}
+
+{% block content %}
+<header class="main-header">
+    <div class="header-title">
+        <h1>Bem-vindo de volta, <span id="welcome-name">{{ user_name or 'Rafael' }}</span>!</h1>
+        <p>A persistência é o caminho do êxito. Bons estudos hoje!</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-primary" id="open-config-btn">
+            <i class="fa-solid fa-gear"></i> Configurações
+        </button>
+    </div>
+</header>
+
+<!-- Grid de Estatísticas Rápidas -->
+<div class="stats-grid">
+    <!-- Progresso EFOMM -->
+    <div class="stat-card" style="--accent-gradient: var(--color-primary); --icon-color: var(--color-primary);">
+        <div class="stat-icon">
+            <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="stat-efomm-percent">{{ efomm_progress.overall_pct }}%</span>
+            <span class="stat-label">Edital EFOMM Concluído</span>
+            <div class="progress-bar-container" style="width: 140px;">
+                <div class="progress-bar-fill" style="width: {{ efomm_progress.overall_pct }}%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vídeos Assistidos -->
+    <div class="stat-card" style="--accent-gradient: var(--color-secondary); --icon-color: var(--color-secondary);">
+        <div class="stat-icon">
+            <i class="fa-solid fa-circle-play"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="stat-videos-count">{{ video_stats.watched }}/{{ video_stats.total }}</span>
+            <span class="stat-label">Vídeos Assistidos</span>
+            <div class="progress-bar-container" style="width: 140px;">
+                <div class="progress-bar-fill" style="width: {{ video_stats.watched_pct }}%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contagem Regressiva para a Prova -->
+    <div class="stat-card" style="--accent-gradient: var(--color-warning); --icon-color: var(--color-warning);">
+        <div class="stat-icon">
+            <i class="fa-solid fa-calendar-day"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="stat-days-left">--</span>
+            <span class="stat-label">Dias para a EFOMM</span>
+        </div>
+    </div>
+</div>
+
+<!-- Layout Principal do Dashboard -->
+<div class="dashboard-layout">
+    <!-- Coluna da Esquerda: Progresso Detalhado EFOMM -->
+    <section class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fa-solid fa-bars-progress" style="color: var(--color-primary);"></i>
+                Progresso por Disciplina
+            </h2>
+            <a href="{{ url_for('efomm') }}" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                Ver Edital Completo
+            </a>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            {% for subject, pct in efomm_progress.subjects.items() %}
+            <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                    <span style="font-weight: 600;">{{ subject }}</span>
+                    <span style="color: var(--text-secondary);">{{ pct }}%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: {{ pct }}%; {% if subject == 'Matemática' %}background: var(--color-primary);{% elif subject == 'Física' %}background: var(--color-secondary);{% elif subject == 'Português' %}background: var(--color-success);{% else %}background: var(--color-warning);{% endif %}"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Coluna da Direita: Vídeos Pendentes & Configurações Rápidas -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Card de Vídeos Pendentes -->
+        <section class="card" style="margin-bottom: 0;">
+            <div class="card-header" style="margin-bottom: 1rem;">
+                <h2 class="card-title" style="font-size: 1.1rem;">
+                    <i class="fa-solid fa-clock" style="color: var(--color-secondary);"></i>
+                    Próximos Vídeos
+                </h2>
+            </div>
+            
+            <div id="pending-videos-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                {% if pending_videos %}
+                    {% for video in pending_videos %}
+                    <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem; overflow: hidden;">
+                            <span style="font-weight: 500; font-size: 0.85rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; color: var(--text-primary);">{{ video.title }}</span>
+                            <span style="font-size: 0.75rem; color: var(--color-secondary);">{{ video.category }}</span>
+                        </div>
+                        <a href="{{ url_for('videos') }}" class="btn btn-secondary" style="padding: 0.35rem 0.5rem; font-size: 0.75rem; border-radius: 4px;">
+                            <i class="fa-solid fa-play"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;">Nenhum vídeo pendente! Adicione ou estude novos tópicos.</p>
+                {% endif %}
+            </div>
+        </section>
+        
+        <!-- Bloco de Citação Motivacional -->
+        <section class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(6, 182, 212, 0.1)); border-color: rgba(99, 102, 241, 0.2); margin-bottom: 0;">
+            <p style="font-style: italic; font-size: 0.9rem; line-height: 1.5; color: var(--text-primary); text-align: center;">
+                "O oficial de marinha mercante é a ponte entre as nações, a engenharia sob os pés e a liderança nas mãos. Estude agora para navegar amanhã."
+            </p>
+        </section>
+    </div>
+</div>
+
+<!-- Modal de Configurações -->
+<div class="modal" id="config-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Configurações do Perfil</h2>
+            <button class="modal-close" id="close-config-modal">&times;</button>
+        </div>
+        <form id="config-form">
+            <div class="form-group">
+                <label for="config-user-name">Seu Nome / Apelido</label>
+                <input type="text" id="config-user-name" class="form-control" value="{{ user_name or 'Rafael' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="config-exam-date">Data da Prova EFOMM</label>
+                <input type="date" id="config-exam-date" class="form-control" value="{{ exam_date or '2026-08-15' }}" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-config-btn">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Passar a data da prova para o javascript da contagem regressiva
+    const examDateStr = "{{ exam_date or '2026-08-15' }}";
+</script>
+{% endblock %}
