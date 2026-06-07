@@ -453,6 +453,7 @@ function renderSubjectTopics(subject) {
         // Topic Title & Videos Button
         const tdTitle = document.createElement('td');
         tdTitle.className = 'topic-title-cell';
+        tdTitle.setAttribute('data-label', 'Tópico');
         
         const titleText = document.createElement('span');
         titleText.className = 'topic-title';
@@ -473,6 +474,7 @@ function renderSubjectTopics(subject) {
         
         // Topic Status Dropdown Wrapper
         const tdStatus = document.createElement('td');
+        tdStatus.setAttribute('data-label', 'Status');
         
         const wrapper = document.createElement('div');
         wrapper.className = `status-select-wrapper ${topic.status}`;
@@ -494,6 +496,7 @@ function renderSubjectTopics(subject) {
         
         // Topic Notes Input
         const tdNotes = document.createElement('td');
+        tdNotes.setAttribute('data-label', 'Anotações');
         
         const notesWrapper = document.createElement('div');
         notesWrapper.className = 'notes-input-wrapper';

@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#070a13">
     <title>{% block title %}Plataforma de Estudos{% endblock %}</title>
     <!-- Meta tags de SEO -->
     <meta name="description" content="Minha plataforma de estudos pessoal para programação, filosofia, finanças e preparação para a prova da EFOMM.">
@@ -64,6 +65,22 @@
             {% block content %}{% endblock %}
         </main>
     </div>
+
+    <!-- Navegação inferior (mobile) -->
+    <nav class="mobile-bottom-nav" aria-label="Navegação principal">
+        <a href="{{ url_for('dashboard') }}" class="mobile-nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('efomm') }}" class="mobile-nav-item {% if active_page == 'efomm' %}active{% endif %}">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>EFOMM</span>
+        </a>
+        <a href="{{ url_for('videos') }}" class="mobile-nav-item {% if active_page == 'videos' %}active{% endif %}">
+            <i class="fa-solid fa-circle-play"></i>
+            <span>Vídeos</span>
+        </a>
+    </nav>
 
     <!-- Modal de Player de Vídeo Integrado (Global) -->
     <div class="modal video-player-modal" id="video-player-modal">
